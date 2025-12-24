@@ -4,14 +4,26 @@
 
 ## Navigation
 
-| Folder | Purpose |
-|--------|---------|
-| [memory/retrospectives/](memory/retrospectives/) | Session logs (rrr) |
-| [memory/learnings/](memory/learnings/) | Patterns & insights |
+| Folder | Purpose | Path Pattern |
+|--------|---------|--------------|
+| [memory/retrospectives/](memory/retrospectives/) | Session logs (/rrr) | `YYYY-MM/DD/HH.MM_slug.md` |
+| [memory/learnings/](memory/learnings/) | Patterns & insights (/snapshot) | `YYYY-MM/DD/HH.MM_slug.md` |
 
 ## Quick Links
 
 - [WIP.md](WIP.md) — Current work
+
+## Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/rrr` | Create session retrospective |
+| `/snapshot` | Capture learning |
+| `/wip` | Show work in progress |
+| `/recap` | Fresh start summary |
+| `/trace` | Search everything |
+| `/standup` | Daily standup |
+| `/forward` | Forward context before /clear |
 
 ---
 

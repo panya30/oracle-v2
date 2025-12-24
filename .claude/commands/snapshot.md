@@ -20,7 +20,7 @@ ARGUMENTS: $ARGUMENTS
 
 ## Action
 
-Create file at: `ψ/memory/learnings/YYYY-MM-DD_slug.md`
+Create file at: `ψ/memory/learnings/YYYY-MM/DD/HH.MM_slug.md`
 
 Template:
 ```markdown
