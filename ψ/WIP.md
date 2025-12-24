@@ -1,15 +1,24 @@
 # WIP — Work in Progress
 
-> Last updated: 2025-12-24 09:03 GMT+7
+> Last updated: 2025-12-24 10:36 GMT+7
 
 ## Current Focus
 
-- [ ] Oracle v2 initialization
-- [ ] First retrospective
+- [x] Oracle v2 initialization ✅
+- [x] Commands & agents installed ✅
+- [x] Documentation consistency ✅
 
-## Pending
+## Completed This Session
 
-- [ ] ...
+- 8 commits
+- 7 commands + 3 agents
+- Path pattern standardized: `YYYY-MM/DD/HH.MM_slug.md`
+
+## Next Session
+
+- [ ] Test `/forward` before /clear
+- [ ] Real project work with Oracle v2
+- [ ] Consider making repo public
 
 ---
 
