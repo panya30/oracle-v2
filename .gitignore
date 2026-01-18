@@ -36,3 +36,5 @@ coverage/
 playwright-report/
 test-results/
 *.pid
+ψ/suno-api/
+ψ/learn/repo/
