@@ -38,3 +38,8 @@ test-results/
 *.pid
 ψ/suno-api/
 ψ/learn/repo/
+
+# External VRM/VTuber projects
+ψ/robin-vtuber/
+ψ/robin-vrm/
+ψ/robin-dance/

@@ -17,25 +17,18 @@ allowed-tools:
 
 ## Action
 
-### Default (Thai - Kanya voice)
+### Default (Karen - Australian)
 ```bash
-say -v Kanya "[message]"
-```
-
-### English flag (-e)
-```bash
-say -v Samantha "[message]"
+say -v Karen "[message]"
 ```
 
 ### Available Voices
 
-**Thai:**
-- Kanya (default)
-
-**English:**
-- Samantha (female, natural)
-- Karen (Australian)
+**Recommended:**
+- Karen (default, Australian female)
+- Samantha (American female)
 - Daniel (British male)
+- Whisper (for secrets)
 
 Check all: `say -v ?`
 
