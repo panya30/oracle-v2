@@ -94,6 +94,72 @@ let automationSettings: AutomationSettings = loadSettings()
 let proposals: TradeProposal[] = []
 let dailyStats: DailyStats = loadDailyStats()
 
+// Idempotency: Track recent signals to prevent duplicates
+const recentSignals = new Map<string, number>() // signalKey -> timestamp
+const SIGNAL_DEDUP_WINDOW = 5 * 60 * 1000 // 5 minutes - same signal within this window is duplicate
+
+// Circuit breaker: Track consecutive failures
+let consecutiveFailures = 0
+const MAX_CONSECUTIVE_FAILURES = 3
+let circuitBreakerTrippedAt: number | null = null
+const CIRCUIT_BREAKER_RESET = 15 * 60 * 1000 // 15 minutes to reset
+
+function getSignalKey(signal: { ticker: string; action: string; agent: string }): string {
+  return `${signal.ticker}-${signal.action}-${signal.agent}`
+}
+
+function isDuplicateSignal(signal: { ticker: string; action: string; agent: string }): boolean {
+  const key = getSignalKey(signal)
+  const lastSeen = recentSignals.get(key)
+  const now = Date.now()
+
+  // Clean old entries
+  const keysToDelete: string[] = []
+  recentSignals.forEach((timestamp, k) => {
+    if (now - timestamp > SIGNAL_DEDUP_WINDOW) {
+      keysToDelete.push(k)
+    }
+  })
+  keysToDelete.forEach(k => recentSignals.delete(k))
+
+  if (lastSeen && now - lastSeen < SIGNAL_DEDUP_WINDOW) {
+    console.log(`🔄 Duplicate signal detected: ${key} (last seen ${Math.round((now - lastSeen) / 1000)}s ago)`)
+    return true
+  }
+
+  recentSignals.set(key, now)
+  return false
+}
+
+function checkCircuitBreaker(): { tripped: boolean; reason?: string } {
+  if (circuitBreakerTrippedAt) {
+    const timeSinceTrip = Date.now() - circuitBreakerTrippedAt
+    if (timeSinceTrip < CIRCUIT_BREAKER_RESET) {
+      return {
+        tripped: true,
+        reason: `Circuit breaker tripped ${Math.round(timeSinceTrip / 1000)}s ago. Resets in ${Math.round((CIRCUIT_BREAKER_RESET - timeSinceTrip) / 1000)}s`,
+      }
+    }
+    // Reset circuit breaker
+    circuitBreakerTrippedAt = null
+    consecutiveFailures = 0
+  }
+  return { tripped: false }
+}
+
+function recordFailure(): void {
+  consecutiveFailures++
+  console.error(`⚠️ Trade failure #${consecutiveFailures}`)
+  if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+    circuitBreakerTrippedAt = Date.now()
+    console.error(`🚫 CIRCUIT BREAKER TRIPPED: ${consecutiveFailures} consecutive failures`)
+  }
+}
+
+function recordSuccess(): void {
+  consecutiveFailures = 0
+}
+
 // Reset daily stats if new day
 function checkDailyReset() {
   const today = new Date().toISOString().split('T')[0]
@@ -243,6 +309,26 @@ async function processSignal(
   },
   settings: AutomationSettings
 ): Promise<{ action: string; proposal?: TradeProposal; order?: any; error?: string; stopLossOrder?: any }> {
+  // SAFETY CHECK 1: Circuit breaker
+  const circuitCheck = checkCircuitBreaker()
+  if (circuitCheck.tripped) {
+    return { action: 'circuit_breaker', error: circuitCheck.reason }
+  }
+
+  // SAFETY CHECK 2: Duplicate signal detection (idempotency)
+  if (isDuplicateSignal(signal)) {
+    return { action: 'duplicate', error: 'Duplicate signal within dedup window (5 min)' }
+  }
+
+  // SAFETY CHECK 3: Portfolio must be fetchable for full-auto
+  if (settings.level === 'full-auto') {
+    const portfolioCheck = await fetchAlpacaPortfolio()
+    if (!portfolioCheck) {
+      recordFailure()
+      return { action: 'error', error: 'Cannot fetch portfolio - refusing to trade blind' }
+    }
+  }
+
   // Check if signal passes filters
   if (signal.confidence < settings.signalFilters.minConfidence) {
     return { action: 'filtered', error: `Confidence ${signal.confidence}% below threshold ${settings.signalFilters.minConfidence}%` }
@@ -438,6 +524,7 @@ async function processSignal(
         })
 
         // Create stop loss order for BUY orders (protect the position)
+        // CRITICAL: If stop-loss fails, we MUST close the position immediately
         let stopLossOrder = null
         if (order.side === 'buy') {
           // Calculate stop loss at 10% below entry price
@@ -469,17 +556,40 @@ async function processSignal(
               stopLossOrder = fixedStopResult.order
               console.log(`✅ Fixed stop loss created: ${fixedStopResult.order?.id}`)
             } else {
-              console.error(`❌ Failed to create any stop loss: ${fixedStopResult.error}`)
+              // CRITICAL: Stop loss failed - close the position immediately for safety
+              console.error(`🚨 CRITICAL: Stop loss failed - closing position for safety`)
+              console.error(`   Error: ${fixedStopResult.error}`)
+
+              // Immediately sell to close the unprotected position
+              const closeResult = await submitOrder({
+                symbol: order.symbol,
+                qty: order.qty,
+                side: 'sell',
+                type: 'market',
+                time_in_force: 'day',
+              })
+
+              recordFailure() // Trip circuit breaker if this keeps happening
+
               addAlert({
-                level: 'warning',
+                level: 'danger',
                 category: 'risk',
-                title: `Stop Loss Failed: ${signal.ticker}`,
-                message: `Position opened but stop loss could not be created. Manual intervention required.`,
+                title: `POSITION CLOSED: Stop Loss Failed`,
+                message: `BUY ${order.qty} ${signal.ticker} executed but stop-loss creation failed. Position immediately closed for safety. Review broker connection.`,
                 agent: 'TYCHE',
               })
+
+              return {
+                action: 'error',
+                error: `Stop-loss creation failed - position closed for safety. Close result: ${closeResult.success ? 'success' : closeResult.error}`,
+                order: result.order,
+              }
             }
           }
         }
+
+        // Record success for circuit breaker
+        recordSuccess()
 
         // Trigger council discussion about the trade (async, don't wait)
         const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3200'

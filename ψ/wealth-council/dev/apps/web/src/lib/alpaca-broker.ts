@@ -300,6 +300,88 @@ export async function getOrder(orderId: string): Promise<AlpacaOrder | null> {
 }
 
 /**
+ * Wait for an order to fill with timeout
+ * Returns the filled order details including actual filled quantity
+ */
+export async function waitForFill(
+  orderId: string,
+  timeoutMs = 30000, // 30 second default timeout
+  pollIntervalMs = 1000
+): Promise<{
+  filled: boolean
+  order: AlpacaOrder | null
+  filledQty: number
+  requestedQty: number
+  isPartialFill: boolean
+  avgPrice: number | null
+}> {
+  const startTime = Date.now()
+
+  while (Date.now() - startTime < timeoutMs) {
+    const order = await getOrder(orderId)
+
+    if (!order) {
+      return {
+        filled: false,
+        order: null,
+        filledQty: 0,
+        requestedQty: 0,
+        isPartialFill: false,
+        avgPrice: null,
+      }
+    }
+
+    const filledQty = parseInt(order.filled_qty) || 0
+    const requestedQty = parseInt(order.qty) || 0
+    const avgPrice = order.filled_avg_price ? parseFloat(order.filled_avg_price) : null
+
+    // Check terminal states
+    if (order.status === 'filled') {
+      return {
+        filled: true,
+        order,
+        filledQty,
+        requestedQty,
+        isPartialFill: filledQty < requestedQty,
+        avgPrice,
+      }
+    }
+
+    if (order.status === 'partially_filled') {
+      console.log(`⏳ Order ${orderId} partially filled: ${filledQty}/${requestedQty}`)
+    }
+
+    if (['canceled', 'expired', 'rejected', 'suspended'].includes(order.status)) {
+      return {
+        filled: false,
+        order,
+        filledQty,
+        requestedQty,
+        isPartialFill: filledQty > 0 && filledQty < requestedQty,
+        avgPrice,
+      }
+    }
+
+    // Wait before polling again
+    await new Promise(resolve => setTimeout(resolve, pollIntervalMs))
+  }
+
+  // Timeout - check final state
+  const finalOrder = await getOrder(orderId)
+  const filledQty = finalOrder ? parseInt(finalOrder.filled_qty) || 0 : 0
+  const requestedQty = finalOrder ? parseInt(finalOrder.qty) || 0 : 0
+
+  return {
+    filled: filledQty > 0,
+    order: finalOrder,
+    filledQty,
+    requestedQty,
+    isPartialFill: filledQty > 0 && filledQty < requestedQty,
+    avgPrice: finalOrder?.filled_avg_price ? parseFloat(finalOrder.filled_avg_price) : null,
+  }
+}
+
+/**
  * Cancel an order
  */
 export async function cancelOrder(orderId: string): Promise<boolean> {

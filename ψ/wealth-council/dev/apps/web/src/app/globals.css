@@ -1,0 +1,199 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Palantir-inspired base styles */
+@layer base {
+  :root {
+    --bg-primary: #0a0e14;
+    --bg-elevated: #0f1419;
+    --bg-card: #141a21;
+    --accent-cyan: #00d4ff;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+  }
+
+  * {
+    @apply border-palantir-border;
+  }
+
+  body {
+    @apply bg-palantir-bg text-text-primary;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-palantir-bg;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-palantir-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-palantir-border-light;
+  }
+}
+
+@layer components {
+  /* Card component */
+  .card {
+    @apply bg-palantir-bg-card border border-palantir-border rounded-lg;
+  }
+
+  .card-elevated {
+    @apply bg-palantir-bg-elevated border border-palantir-border rounded-lg shadow-lg;
+  }
+
+  /* Data display */
+  .data-value {
+    @apply font-mono text-text-primary;
+  }
+
+  .data-label {
+    @apply text-xs uppercase tracking-wider text-text-muted;
+  }
+
+  /* Status indicators */
+  .status-dot {
+    @apply w-2 h-2 rounded-full;
+  }
+
+  .status-dot-success {
+    @apply bg-status-success shadow-glow-green;
+  }
+
+  .status-dot-warning {
+    @apply bg-status-warning;
+  }
+
+  .status-dot-danger {
+    @apply bg-status-danger shadow-glow-red animate-pulse;
+  }
+
+  /* Metric cards */
+  .metric-card {
+    @apply card p-4 flex flex-col gap-1;
+  }
+
+  .metric-value {
+    @apply text-2xl font-mono font-semibold;
+  }
+
+  .metric-change {
+    @apply text-sm font-mono;
+  }
+
+  .metric-change-positive {
+    @apply text-status-success;
+  }
+
+  .metric-change-negative {
+    @apply text-status-danger;
+  }
+
+  /* Table styles */
+  .data-table {
+    @apply w-full text-sm;
+  }
+
+  .data-table th {
+    @apply text-left text-xs uppercase tracking-wider text-text-muted font-medium py-3 px-4 border-b border-palantir-border;
+  }
+
+  .data-table td {
+    @apply py-3 px-4 border-b border-palantir-border font-mono;
+  }
+
+  .data-table tr:hover td {
+    @apply bg-palantir-bg-hover;
+  }
+
+  /* Sidebar */
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-2.5 text-text-secondary hover:text-text-primary hover:bg-palantir-bg-hover rounded-lg transition-colors;
+  }
+
+  .sidebar-link-active {
+    @apply text-accent-cyan bg-palantir-bg-hover border-l-2 border-accent-cyan;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200;
+  }
+
+  .btn-primary {
+    @apply bg-accent-cyan text-palantir-bg hover:bg-accent-cyan/90;
+  }
+
+  .btn-secondary {
+    @apply bg-palantir-bg-hover text-text-primary border border-palantir-border hover:border-palantir-border-light;
+  }
+
+  .btn-danger {
+    @apply bg-status-danger-dim text-text-primary hover:bg-status-danger;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+  }
+
+  .badge-success {
+    @apply bg-status-success-dim/30 text-status-success;
+  }
+
+  .badge-warning {
+    @apply bg-status-warning-dim/30 text-status-warning;
+  }
+
+  .badge-danger {
+    @apply bg-status-danger-dim/30 text-status-danger;
+  }
+
+  .badge-info {
+    @apply bg-accent-blue/20 text-accent-blue;
+  }
+
+  /* Grid background */
+  .grid-bg {
+    @apply bg-grid-pattern bg-grid;
+  }
+
+  /* Glow effects */
+  .glow-cyan {
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.1);
+  }
+
+  .glow-border {
+    @apply border border-accent-cyan/30;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent-cyan to-accent-blue;
+  }
+
+  .animate-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
