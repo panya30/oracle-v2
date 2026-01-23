@@ -7,10 +7,14 @@
  * 3. Pattern recognition - what worked, what didn't
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
-import { join } from 'path'
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs'
+import { join, resolve } from 'path'
 
 const DATA_DIR = join(process.cwd(), 'data')
+
+// Oracle Knowledge Base Path (ψ/memory/learnings/)
+// Navigate from wealth-council/dev/apps/web to ψ/memory/learnings
+const ORACLE_LEARNINGS_DIR = resolve(process.cwd(), '../../../../memory/learnings')
 const MEMORY_FILE = join(DATA_DIR, 'agent-memory.json')
 
 export interface TradeMemory {
@@ -593,4 +597,208 @@ export function generateIntelligentResponse(
     default:
       return `Analyzing the situation based on available data...`
   }
+}
+
+// === ORACLE INTEGRATION ===
+// Connects agents to the Oracle knowledge base for continuous learning
+
+export interface OracleLearning {
+  id: string
+  filename: string
+  content: string
+  concepts: string[]
+  date: string
+  relevance: 'high' | 'medium' | 'low'
+}
+
+/**
+ * Load learnings from Oracle knowledge base (ψ/memory/learnings/)
+ * Searches for trading-related insights
+ */
+export function loadOracleLearnings(keywords: string[] = ['bond', 'trade', 'yield', 'market', 'investment']): OracleLearning[] {
+  const learnings: OracleLearning[] = []
+
+  try {
+    if (!existsSync(ORACLE_LEARNINGS_DIR)) {
+      console.log('Oracle learnings directory not found:', ORACLE_LEARNINGS_DIR)
+      return learnings
+    }
+
+    const files = readdirSync(ORACLE_LEARNINGS_DIR)
+      .filter(f => f.endsWith('.md'))
+      .sort()
+      .reverse() // Most recent first
+      .slice(0, 50) // Limit to 50 most recent files
+
+    for (const file of files) {
+      try {
+        const filePath = join(ORACLE_LEARNINGS_DIR, file)
+        const content = readFileSync(filePath, 'utf-8')
+
+        // Check if content is relevant to trading/markets
+        const isRelevant = keywords.some(kw =>
+          content.toLowerCase().includes(kw.toLowerCase())
+        )
+
+        if (isRelevant) {
+          // Extract key insights from markdown
+          const insights = extractInsights(content)
+
+          if (insights) {
+            // Parse date from filename (format: YYYY-MM-DD_slug.md)
+            const dateMatch = file.match(/^(\d{4}-\d{2}-\d{2})/)
+            const date = dateMatch ? dateMatch[1] : new Date().toISOString().split('T')[0]
+
+            // Determine relevance based on keyword density
+            const keywordCount = keywords.filter(kw =>
+              content.toLowerCase().includes(kw.toLowerCase())
+            ).length
+            const relevance = keywordCount >= 3 ? 'high' : keywordCount >= 2 ? 'medium' : 'low'
+
+            learnings.push({
+              id: file.replace('.md', ''),
+              filename: file,
+              content: insights,
+              concepts: extractConcepts(content),
+              date,
+              relevance,
+            })
+          }
+        }
+      } catch (e) {
+        // Skip files that can't be read
+      }
+    }
+
+    console.log(`📚 Loaded ${learnings.length} Oracle learnings`)
+    return learnings.slice(0, 20) // Return top 20 most relevant
+  } catch (e) {
+    console.error('Failed to load Oracle learnings:', e)
+    return learnings
+  }
+}
+
+/**
+ * Extract key insights from markdown content
+ */
+function extractInsights(content: string): string | null {
+  // Look for key sections that contain insights
+  const sections = [
+    /## Key (?:Insights?|Takeaways?|Points?|Lessons?)\n([\s\S]*?)(?=\n##|\n$)/i,
+    /## Summary\n([\s\S]*?)(?=\n##|\n$)/i,
+    /## Conclusion\n([\s\S]*?)(?=\n##|\n$)/i,
+    /## What (?:We|I) Learned\n([\s\S]*?)(?=\n##|\n$)/i,
+  ]
+
+  for (const pattern of sections) {
+    const match = content.match(pattern)
+    if (match && match[1]) {
+      // Clean up and truncate
+      return match[1].trim().slice(0, 500)
+    }
+  }
+
+  // Fallback: get first substantive paragraph
+  const lines = content.split('\n').filter(l => l.trim() && !l.startsWith('#'))
+  if (lines.length > 0) {
+    return lines.slice(0, 3).join(' ').slice(0, 300)
+  }
+
+  return null
+}
+
+/**
+ * Extract concept tags from content
+ */
+function extractConcepts(content: string): string[] {
+  const concepts: string[] = []
+
+  // Look for explicit concepts/tags
+  const conceptMatch = content.match(/concepts?:\s*\[(.*?)\]/i)
+  if (conceptMatch) {
+    const tags = conceptMatch[1].split(',').map(t => t.trim().replace(/["']/g, ''))
+    concepts.push(...tags)
+  }
+
+  // Infer concepts from content
+  const tradingTerms = ['bond', 'yield', 'treasury', 'rate', 'fed', 'inflation', 'spread', 'duration']
+  tradingTerms.forEach(term => {
+    if (content.toLowerCase().includes(term) && !concepts.includes(term)) {
+      concepts.push(term)
+    }
+  })
+
+  return concepts.slice(0, 5)
+}
+
+/**
+ * Save a new learning to Oracle (when agents learn something valuable)
+ */
+export function saveToOracle(learning: {
+  title: string
+  content: string
+  concepts: string[]
+  source: string
+}): boolean {
+  try {
+    if (!existsSync(ORACLE_LEARNINGS_DIR)) {
+      mkdirSync(ORACLE_LEARNINGS_DIR, { recursive: true })
+    }
+
+    const date = new Date().toISOString().split('T')[0]
+    const slug = learning.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .slice(0, 50)
+
+    const filename = `${date}_${slug}.md`
+    const filePath = join(ORACLE_LEARNINGS_DIR, filename)
+
+    const markdown = `# ${learning.title}
+
+**Date**: ${date}
+**Source**: ${learning.source}
+**Concepts**: [${learning.concepts.map(c => `"${c}"`).join(', ')}]
+
+## Content
+
+${learning.content}
+
+---
+*Automatically logged by Wealth Council Agent*
+`
+
+    writeFileSync(filePath, markdown, 'utf-8')
+    console.log(`📝 Saved learning to Oracle: ${filename}`)
+    return true
+  } catch (e) {
+    console.error('Failed to save to Oracle:', e)
+    return false
+  }
+}
+
+/**
+ * Get combined learnings from local memory + Oracle
+ */
+export function getCombinedLearnings(): AgentLearning[] {
+  const localLearnings = loadMemory().learnings
+  const oracleLearnings = loadOracleLearnings()
+
+  // Convert Oracle learnings to AgentLearning format
+  const converted: AgentLearning[] = oracleLearnings.map(ol => ({
+    id: `oracle-${ol.id}`,
+    timestamp: ol.date,
+    agent: 'ORACLE',
+    type: ol.relevance === 'high' ? 'insight' : 'pattern',
+    content: ol.content,
+    context: {
+      marketCondition: ol.concepts.join(', '),
+    },
+    confidence: ol.relevance === 'high' ? 90 : ol.relevance === 'medium' ? 70 : 50,
+  }))
+
+  // Combine and sort by timestamp
+  return [...localLearnings, ...converted]
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .slice(0, 30)
 }

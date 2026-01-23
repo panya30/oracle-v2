@@ -3,10 +3,23 @@
  *
  * Each agent has personality, expertise, and reasoning capabilities
  * They analyze real data and goals to provide thoughtful recommendations
+ *
+ * ENHANCED: Agents now use memory to learn from:
+ * - Historical trades and their outcomes
+ * - Past learnings and insights
+ * - Successful trader wisdom
  */
 
 import OpenAI from 'openai'
-import { type InvestmentGoal } from './agent-intelligence'
+import {
+  type InvestmentGoal,
+  loadMemory,
+  getTradeStats,
+  type TradeMemory,
+  type AgentLearning,
+  getCombinedLearnings,
+  saveToOracle,
+} from './agent-intelligence'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -170,6 +183,106 @@ SPEAKING STYLE:
   },
 }
 
+// Wisdom from successful traders - lessons to guide decisions
+const TRADER_WISDOM = [
+  // Ray Dalio - Bridgewater
+  { trader: 'Ray Dalio', lesson: 'Diversify across asset classes and time horizons. Never bet everything on one outcome.' },
+  { trader: 'Ray Dalio', lesson: 'Pain + Reflection = Progress. Every loss is a learning opportunity.' },
+  { trader: 'Ray Dalio', lesson: 'The biggest mistake investors make is to believe that what happened recently is likely to persist.' },
+
+  // Paul Tudor Jones
+  { trader: 'Paul Tudor Jones', lesson: 'The secret to being successful is to always be learning and adapting.' },
+  { trader: 'Paul Tudor Jones', lesson: 'Never average losers. Decrease your trading volume when losing.' },
+  { trader: 'Paul Tudor Jones', lesson: 'The most important rule of trading is to play great defense, not great offense.' },
+
+  // Stanley Druckenmiller
+  { trader: 'Stanley Druckenmiller', lesson: 'When you see it, bet big. Soros taught me it\'s not whether you\'re right or wrong, but how much you make when right.' },
+  { trader: 'Stanley Druckenmiller', lesson: 'The way to build long-term returns is through preservation of capital and home runs.' },
+  { trader: 'Stanley Druckenmiller', lesson: 'I never use valuation to time the market. I use liquidity and technical analysis.' },
+
+  // George Soros
+  { trader: 'George Soros', lesson: 'It\'s not whether you\'re right or wrong that\'s important, but how much money you make when you\'re right and how much you lose when you\'re wrong.' },
+  { trader: 'George Soros', lesson: 'Markets are constantly in a state of uncertainty and flux, and money is made by discounting the obvious and betting on the unexpected.' },
+
+  // Bond Market Specific
+  { trader: 'Bill Gross', lesson: 'Bond investors should focus on total return, not just yield. The biggest gains come from capital appreciation during rate cuts.' },
+  { trader: 'Bill Gross', lesson: 'When the Fed pivots, move fast. Bond market moves are often violent and quick.' },
+  { trader: 'Jeffrey Gundlach', lesson: 'The best bond trades come at inflection points. Watch the yield curve for signals.' },
+  { trader: 'Jeffrey Gundlach', lesson: 'In a rising rate environment, short duration. In a falling rate environment, extend duration aggressively.' },
+
+  // Risk Management
+  { trader: 'Howard Marks', lesson: 'The biggest investing errors come from being too bullish at the top and too bearish at the bottom.' },
+  { trader: 'Howard Marks', lesson: 'Risk means more things can happen than will happen. Always prepare for multiple scenarios.' },
+]
+
+// Load agent memory with learnings and trade history
+// Now includes Oracle knowledge base integration for continuous learning
+export function loadAgentMemory(): {
+  learnings: AgentLearning[]
+  trades: TradeMemory[]
+  winningPatterns: string[]
+  losingPatterns: string[]
+  traderWisdom: typeof TRADER_WISDOM
+  oracleLearnings: AgentLearning[]
+} {
+  const memory = loadMemory()
+  const stats = getTradeStats()
+
+  // Get combined learnings (local + Oracle)
+  const combinedLearnings = getCombinedLearnings()
+
+  // Extract patterns from successful and failed trades
+  const winningPatterns: string[] = []
+  const losingPatterns: string[] = []
+
+  memory.trades.forEach(trade => {
+    if (trade.outcome) {
+      if (trade.outcome.pnl && trade.outcome.pnl > 0) {
+        winningPatterns.push(`WIN: ${trade.action} ${trade.ticker} - ${trade.reason}`)
+      } else if (trade.outcome.pnl && trade.outcome.pnl < 0) {
+        losingPatterns.push(`LOSS: ${trade.action} ${trade.ticker} - ${trade.reason}`)
+      }
+    }
+  })
+
+  // Separate Oracle learnings for special handling
+  const oracleLearnings = combinedLearnings.filter(l => l.id.startsWith('oracle-'))
+
+  return {
+    learnings: combinedLearnings.slice(0, 20), // Combined learnings
+    trades: memory.trades.slice(0, 10), // Last 10 trades
+    winningPatterns: winningPatterns.slice(0, 5),
+    losingPatterns: losingPatterns.slice(0, 5),
+    traderWisdom: TRADER_WISDOM,
+    oracleLearnings: oracleLearnings.slice(0, 10), // Top 10 Oracle insights
+  }
+}
+
+// Get relevant wisdom based on current market situation
+function getRelevantWisdom(context: CouncilContext): string[] {
+  const wisdom: string[] = []
+  const memory = loadAgentMemory()
+
+  // Always include some general wisdom
+  const generalWisdom = memory.traderWisdom
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3)
+    .map(w => `${w.trader}: "${w.lesson}"`)
+
+  wisdom.push(...generalWisdom)
+
+  // Add context-specific wisdom
+  if (context.trend.direction === 'down' && context.trend.volatility === 'high') {
+    wisdom.push('Paul Tudor Jones: "The most important rule of trading is to play great defense, not great offense."')
+  }
+
+  if (context.stats.winRate < 50) {
+    wisdom.push('Ray Dalio: "Pain + Reflection = Progress. Every loss is a learning opportunity."')
+  }
+
+  return wisdom
+}
+
 export interface CouncilContext {
   market: {
     yields?: { tenor: string; yield: number }[]
@@ -201,6 +314,7 @@ export interface CouncilContext {
 
 function formatContextForAgent(context: CouncilContext): string {
   const { market, portfolio, goals, stats, trend, recentTrades } = context
+  const memory = loadAgentMemory()
 
   let contextStr = `## CURRENT MARKET DATA\n`
 
@@ -237,10 +351,43 @@ function formatContextForAgent(context: CouncilContext): string {
     contextStr += `No open positions (100% cash)\n`
   }
 
-  contextStr += `\n## TRADING STATS\n`
+  contextStr += `\n## TRADING PERFORMANCE\n`
   contextStr += `Total Trades: ${stats.totalTrades}\n`
   contextStr += `Win Rate: ${stats.winRate.toFixed(0)}%\n`
   contextStr += `Avg P&L: $${stats.avgPnL.toFixed(2)}\n`
+
+  // Add historical learnings from memory
+  if (memory.learnings.length > 0) {
+    contextStr += `\n## LESSONS FROM PAST TRADES\n`
+    memory.learnings.slice(0, 5).forEach(l => {
+      contextStr += `- [${l.type.toUpperCase()}] ${l.content}\n`
+    })
+  }
+
+  // Add winning patterns
+  if (memory.winningPatterns.length > 0) {
+    contextStr += `\n## WHAT HAS WORKED (Copy these!)\n`
+    memory.winningPatterns.forEach(p => {
+      contextStr += `- ${p}\n`
+    })
+  }
+
+  // Add losing patterns to avoid
+  if (memory.losingPatterns.length > 0) {
+    contextStr += `\n## WHAT TO AVOID (Don't repeat!)\n`
+    memory.losingPatterns.forEach(p => {
+      contextStr += `- ${p}\n`
+    })
+  }
+
+  // Add Oracle knowledge base insights
+  if (memory.oracleLearnings && memory.oracleLearnings.length > 0) {
+    contextStr += `\n## ORACLE KNOWLEDGE BASE (Long-term learnings)\n`
+    memory.oracleLearnings.slice(0, 5).forEach(l => {
+      const content = l.content.slice(0, 200) + (l.content.length > 200 ? '...' : '')
+      contextStr += `- [${l.context?.marketCondition || 'insight'}] ${content}\n`
+    })
+  }
 
   if (goals.length > 0) {
     contextStr += `\n## ACTIVE INVESTMENT GOALS\n`
@@ -253,6 +400,15 @@ function formatContextForAgent(context: CouncilContext): string {
     contextStr += `\n## RECENT TRADES\n`
     recentTrades.slice(0, 5).forEach(t => {
       contextStr += `- ${t.action.toUpperCase()} ${t.ticker} at $${t.price}${t.pnl ? ` (P&L: $${t.pnl.toFixed(2)})` : ''}\n`
+    })
+  }
+
+  // Add wisdom from successful traders
+  const wisdom = getRelevantWisdom(context)
+  if (wisdom.length > 0) {
+    contextStr += `\n## WISDOM FROM SUCCESSFUL TRADERS\n`
+    wisdom.forEach(w => {
+      contextStr += `- ${w}\n`
     })
   }
 
@@ -280,10 +436,13 @@ DISCUSSION TOPIC: "${topic}"
 
 INSTRUCTIONS:
 - Provide thoughtful analysis based on the data above
+- LEARN FROM HISTORY: Reference past wins/losses and apply those lessons
 - Reference specific numbers and goals
+- Apply wisdom from successful traders when relevant
 - Keep response focused (2-4 sentences)
 - If you have a strong opinion, state it clearly
-- If you need input from another agent, ask them directly`,
+- If you need input from another agent, ask them directly
+- NEVER repeat past mistakes - if something lost money before, flag it`,
     },
   ]
 
@@ -314,7 +473,7 @@ INSTRUCTIONS:
       model: 'gpt-4o-mini',
       messages,
       max_tokens: 300,
-      temperature: 0.7,
+      temperature: 0.3, // Lower temperature for more consistent trading decisions
     })
 
     return response.choices[0]?.message?.content || `${persona.name} is analyzing the situation...`
