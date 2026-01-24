@@ -222,7 +222,8 @@ async function startDiscussion(topic: string, isAutonomous = false): Promise<Ses
   const context = toCouncilContext(rawContext)
 
   // Generate AI-powered discussion (2 rounds for deeper reasoning)
-  const aiMessages = await generateCouncilDiscussion(topic, context, isAutonomous ? 2 : 1)
+  // Pass session start time for temporal awareness
+  const aiMessages = await generateCouncilDiscussion(topic, context, isAutonomous ? 2 : 1, now)
 
   // Convert to Message format
   const messages: Message[] = aiMessages.map((msg, idx) => ({
@@ -281,8 +282,8 @@ async function respondToUser(sessionId: string, userMessage: string): Promise<Me
   const context = toCouncilContext(rawContext)
   const conversationHistory = session.messages.slice(-10).map(m => ({ agent: m.agent, content: m.content }))
 
-  // Generate AI responses
-  const aiResponses = await generateAgentReply(userMessage, context, conversationHistory)
+  // Generate AI responses with session start time for temporal awareness
+  const aiResponses = await generateAgentReply(userMessage, context, conversationHistory, session.startedAt)
 
   // Convert to Message format
   const responses: Message[] = aiResponses.map((msg, idx) => ({

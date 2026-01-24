@@ -312,11 +312,34 @@ export interface CouncilContext {
   recentTrades?: { ticker: string; action: string; price: number; pnl?: number }[]
 }
 
-function formatContextForAgent(context: CouncilContext): string {
+function formatContextForAgent(context: CouncilContext, sessionStartTime?: string): string {
   const { market, portfolio, goals, stats, trend, recentTrades } = context
   const memory = loadAgentMemory()
 
-  let contextStr = `## CURRENT MARKET DATA\n`
+  // Add temporal context
+  const now = new Date()
+  const currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+  const currentDate = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+
+  let contextStr = `## CURRENT TIME\n`
+  contextStr += `Now: ${currentTime} on ${currentDate}\n`
+
+  if (sessionStartTime) {
+    const sessionStart = new Date(sessionStartTime)
+    const sameDay = sessionStart.toDateString() === now.toDateString()
+    const minutesAgo = Math.floor((now.getTime() - sessionStart.getTime()) / 60000)
+
+    if (sameDay && minutesAgo < 60) {
+      contextStr += `Session started: ${minutesAgo} minutes ago (same conversation)\n`
+    } else if (sameDay) {
+      contextStr += `Session started: earlier today at ${sessionStart.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}\n`
+    } else {
+      contextStr += `Session started: ${sessionStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}\n`
+    }
+    contextStr += `IMPORTANT: This is a CONTINUED conversation. Don't say "today" as if starting fresh unless it's actually a new day.\n`
+  }
+
+  contextStr += `\n## CURRENT MARKET DATA\n`
 
   if (market?.yields?.length) {
     contextStr += `Treasury Yields:\n`
@@ -420,10 +443,11 @@ export async function generateAgentResponse(
   topic: string,
   context: CouncilContext,
   conversationHistory: { agent: string; content: string }[],
-  isOpener = false
+  isOpener = false,
+  sessionStartTime?: string
 ): Promise<string> {
   const persona = AGENT_PERSONAS[agent]
-  const contextStr = formatContextForAgent(context)
+  const contextStr = formatContextForAgent(context, sessionStartTime)
 
   const messages: OpenAI.ChatCompletionMessageParam[] = [
     {
@@ -442,7 +466,13 @@ INSTRUCTIONS:
 - Keep response focused (2-4 sentences)
 - If you have a strong opinion, state it clearly
 - If you need input from another agent, ask them directly
-- NEVER repeat past mistakes - if something lost money before, flag it`,
+- NEVER repeat past mistakes - if something lost money before, flag it
+
+CONVERSATION CONTINUITY:
+- Check the CURRENT TIME section to know if this is a continued conversation
+- If session started recently (same day), DON'T say "today" or "this morning" as if starting fresh
+- Reference what was discussed earlier if continuing a conversation
+- Only use time-based greetings for genuinely NEW sessions`,
     },
   ]
 
@@ -487,36 +517,38 @@ INSTRUCTIONS:
 export async function generateCouncilDiscussion(
   topic: string,
   context: CouncilContext,
-  rounds = 2
+  rounds = 2,
+  sessionStartTime?: string
 ): Promise<{ agent: string; content: string }[]> {
   const messages: { agent: string; content: string }[] = []
   const agentOrder: (keyof typeof AGENT_PERSONAS)[] = ['HERMES', 'DELPHI', 'TYCHE', 'ATHENA', 'ARGUS']
+  const startTime = sessionStartTime || new Date().toISOString()
 
   // PLUTUS opens
-  const plutusOpener = await generateAgentResponse('PLUTUS', topic, context, [], true)
+  const plutusOpener = await generateAgentResponse('PLUTUS', topic, context, [], true, startTime)
   messages.push({ agent: 'PLUTUS', content: plutusOpener })
 
   // Each agent contributes
   for (const agent of agentOrder) {
-    const response = await generateAgentResponse(agent, topic, context, messages)
+    const response = await generateAgentResponse(agent, topic, context, messages, false, startTime)
     messages.push({ agent, content: response })
   }
 
   // Additional rounds if requested
   for (let round = 1; round < rounds; round++) {
     // PLUTUS synthesizes and asks follow-up
-    const plutusFollowup = await generateAgentResponse('PLUTUS', topic, context, messages)
+    const plutusFollowup = await generateAgentResponse('PLUTUS', topic, context, messages, false, startTime)
     messages.push({ agent: 'PLUTUS', content: plutusFollowup })
 
     // Key agents respond to follow-up (shorter round)
     for (const agent of ['DELPHI', 'TYCHE'] as const) {
-      const response = await generateAgentResponse(agent, topic, context, messages)
+      const response = await generateAgentResponse(agent, topic, context, messages, false, startTime)
       messages.push({ agent, content: response })
     }
   }
 
   // PLUTUS concludes with recommendation
-  const plutusConclusion = await generateAgentResponse('PLUTUS', `Conclude: ${topic}`, context, messages)
+  const plutusConclusion = await generateAgentResponse('PLUTUS', `Conclude: ${topic}`, context, messages, false, startTime)
   messages.push({ agent: 'PLUTUS', content: plutusConclusion })
 
   return messages
@@ -525,7 +557,8 @@ export async function generateCouncilDiscussion(
 export async function generateAgentReply(
   userQuestion: string,
   context: CouncilContext,
-  conversationHistory: { agent: string; content: string }[]
+  conversationHistory: { agent: string; content: string }[],
+  sessionStartTime?: string
 ): Promise<{ agent: string; content: string }[]> {
   const messages: { agent: string; content: string }[] = []
 
@@ -549,7 +582,9 @@ export async function generateAgentReply(
     'PLUTUS',
     userQuestion,
     context,
-    [...conversationHistory, { agent: 'USER', content: userQuestion }]
+    [...conversationHistory, { agent: 'USER', content: userQuestion }],
+    false,
+    sessionStartTime
   )
   messages.push({ agent: 'PLUTUS', content: plutusAck })
 
@@ -559,7 +594,9 @@ export async function generateAgentReply(
       agent,
       userQuestion,
       context,
-      [...conversationHistory, { agent: 'USER', content: userQuestion }, ...messages]
+      [...conversationHistory, { agent: 'USER', content: userQuestion }, ...messages],
+      false,
+      sessionStartTime
     )
     messages.push({ agent, content: response })
   }
