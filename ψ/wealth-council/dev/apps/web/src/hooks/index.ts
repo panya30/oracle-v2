@@ -110,3 +110,7 @@ export { useAutomation, useAutomationSettings, useTradeProposals } from './useAu
 
 // Signal processor (autonomous trading)
 export { useSignalProcessor } from './useSignalProcessor'
+
+// Speech synthesis (text-to-speech)
+export { useSpeech } from './useSpeech'
+export type { SpeechLanguage, SpeechRate } from './useSpeech'

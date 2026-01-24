@@ -13,7 +13,9 @@ import {
   Trash2,
   ToggleLeft,
   ToggleRight,
+  Sun,
 } from 'lucide-react'
+import { MorningBriefCard } from '@/components/council/MorningBriefCard'
 
 interface Agent {
   name: string
@@ -676,23 +678,31 @@ export default function CouncilPage() {
             </div>
           </>
         ) : (
-          /* No session selected */
-          <div className="flex-1 flex items-center justify-center text-center p-8">
-            <div>
-              <Users className="w-16 h-16 text-text-muted mx-auto mb-4 opacity-50" />
-              <h3 className="text-lg font-medium text-text-secondary mb-2">
-                Welcome to Wealth Council
-              </h3>
-              <p className="text-text-muted mb-4 max-w-md">
-                Watch PLUTUS and the team discuss trading strategy, or join the conversation to ask questions.
-              </p>
-              <button
-                onClick={() => setShowNewSession(true)}
-                className="px-6 py-2 bg-accent-cyan text-white rounded-lg hover:bg-accent-cyan/90 transition-colors flex items-center gap-2 mx-auto"
-              >
-                <Plus className="w-4 h-4" />
-                Start a Discussion
-              </button>
+          /* No session selected - Show Morning Brief */
+          <div className="flex-1 flex flex-col overflow-y-auto">
+            {/* Morning Brief Card */}
+            <div className="p-4">
+              <MorningBriefCard />
+            </div>
+
+            {/* Welcome Section */}
+            <div className="flex-1 flex items-center justify-center text-center p-8">
+              <div>
+                <Users className="w-16 h-16 text-text-muted mx-auto mb-4 opacity-50" />
+                <h3 className="text-lg font-medium text-text-secondary mb-2">
+                  Welcome to Wealth Council
+                </h3>
+                <p className="text-text-muted mb-4 max-w-md">
+                  Watch PLUTUS and the team discuss trading strategy, or join the conversation to ask questions.
+                </p>
+                <button
+                  onClick={() => setShowNewSession(true)}
+                  className="px-6 py-2 bg-accent-cyan text-white rounded-lg hover:bg-accent-cyan/90 transition-colors flex items-center gap-2 mx-auto"
+                >
+                  <Plus className="w-4 h-4" />
+                  Start a Discussion
+                </button>
+              </div>
             </div>
           </div>
         )}

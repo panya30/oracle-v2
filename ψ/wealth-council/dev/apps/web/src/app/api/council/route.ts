@@ -434,6 +434,177 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true })
     }
 
+    case 'morning-brief': {
+      const { language = 'en-US' } = params
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3200'
+
+      try {
+        // Fetch market data, portfolio, and events in parallel
+        const [yieldsRes, pricesRes, portfolioRes, eventsRes] = await Promise.all([
+          fetch(`${baseUrl}/api/hermes?action=yields`).catch(() => null),
+          fetch(`${baseUrl}/api/hermes?action=prices&tickers=TMV,TBT,TLT,TBF`).catch(() => null),
+          fetch(`${baseUrl}/api/broker?action=portfolio`).catch(() => null),
+          fetch(`${baseUrl}/api/chronos?action=upcoming&days=7`).catch(() => null),
+        ])
+
+        // Parse responses
+        const [yieldsData, pricesData, portfolioData, eventsData] = await Promise.all([
+          yieldsRes?.json().catch(() => null),
+          pricesRes?.json().catch(() => null),
+          portfolioRes?.json().catch(() => null),
+          eventsRes?.json().catch(() => null),
+        ])
+
+        // Extract yield data
+        const yields = yieldsData?.data?.yields || []
+        const y10Yield = yields.find((y: any) => y.tenor === '10Y')
+        const y30Yield = yields.find((y: any) => y.tenor === '30Y')
+
+        const y10 = y10Yield?.yield || 4.26
+        const y30 = y30Yield?.yield || 4.84
+        const y10Change = y10Yield?.change || 0
+        const y30Change = y30Yield?.change || -0.03
+
+        // Determine yield curve status
+        const spread = (yieldsData?.data?.spread10Y30Y || 0)
+        const curveStatus = spread > 0.6 ? 'steepening' : spread < 0.4 ? 'flattening' : 'stable'
+
+        // Extract portfolio data
+        const portfolio = portfolioData?.data || {}
+        const positions = portfolio.positions || []
+        const totalValue = portfolio.totalValue || portfolio.portfolio_value || 100000
+        const totalPnlToday = positions.reduce(
+          (sum: number, p: any) => sum + (p.unrealized_pl || p.unrealizedPnL || 0),
+          0
+        )
+
+        // Extract events
+        const eventsArray = eventsData?.data || []
+        const upcomingEvents = (Array.isArray(eventsArray) ? eventsArray : [])
+          .filter((e: any) => e.impact === 'high')
+          .slice(0, 3)
+          .map((e: any) => {
+            const eventDate = new Date(e.date)
+            const now = new Date()
+            const diffTime = eventDate.getTime() - now.getTime()
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+            return {
+              name: e.title || e.name,
+              daysUntil: diffDays,
+            }
+          })
+
+        // Determine strategy
+        let strategy: 'HOLD' | 'BUY' | 'SELL' | 'WAIT' = 'HOLD'
+        if (y10 >= 4.5 && totalPnlToday >= 0) {
+          strategy = 'HOLD'
+        } else if (y10 >= 4.8) {
+          strategy = 'BUY'
+        } else if (y10 < 4.0 && totalPnlToday > 100) {
+          strategy = 'SELL'
+        } else {
+          strategy = 'WAIT'
+        }
+
+        // Generate brief text
+        const date = new Date().toLocaleDateString(
+          language === 'th-TH' ? 'th-TH' : 'en-US',
+          { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+        )
+
+        let briefText: string
+
+        if (language === 'th-TH') {
+          // Thai brief
+          briefText = `สวัสดีตอนเช้า! สรุปตลาดวันที่ ${date}
+
+อัตราผลตอบแทนพันธบัตร:
+- พันธบัตร 10 ปี: ${y10.toFixed(2)}% ${y10Change >= 0 ? 'เพิ่มขึ้น' : 'ลดลง'} ${Math.abs(y10Change * 100).toFixed(0)} basis points
+- พันธบัตร 30 ปี: ${y30.toFixed(2)}% ${y30Change >= 0 ? 'เพิ่มขึ้น' : 'ลดลง'} ${Math.abs(y30Change * 100).toFixed(0)} basis points
+- Yield curve กำลัง${curveStatus === 'steepening' ? 'ชันขึ้น' : curveStatus === 'flattening' ? 'แบนลง' : 'คงที่'}
+
+พอร์ตของคุณ:
+- มูลค่ารวม: $${totalValue.toLocaleString()}
+${positions.length > 0
+  ? positions.map((p: any) => `- Position: ${p.qty || p.quantity} หุ้น ${p.symbol}`).join('\n')
+  : '- ยังไม่มี position'
+}
+- กำไรขาดทุนวันนี้: ${totalPnlToday >= 0 ? '+' : ''}$${totalPnlToday.toFixed(2)}
+
+${upcomingEvents.length > 0
+  ? `กิจกรรมสำคัญ:\n${upcomingEvents.map((e: { name: string; daysUntil: number }) =>
+      `- ${e.name} ในอีก ${e.daysUntil} วัน`
+    ).join('\n')}`
+  : 'ไม่มีกิจกรรมสำคัญในสัปดาห์นี้'
+}
+
+กลยุทธ์: ${strategy === 'HOLD' ? 'ถือ' : strategy === 'BUY' ? 'ซื้อ' : strategy === 'SELL' ? 'ขาย' : 'รอ'}
+
+ขอให้เป็นวันที่ดีนะคะ!`
+        } else {
+          // English brief
+          briefText = `Good morning! Here's your market brief for ${date}.
+
+Treasury Yields:
+- 10-Year: ${y10.toFixed(2)}%, ${y10Change >= 0 ? 'up' : 'down'} ${Math.abs(y10Change * 100).toFixed(0)} basis points
+- 30-Year: ${y30.toFixed(2)}%, ${y30Change >= 0 ? 'up' : 'down'} ${Math.abs(y30Change * 100).toFixed(0)} basis points
+- Yield curve is ${curveStatus}
+
+Your Portfolio:
+- Total value: $${totalValue.toLocaleString()}
+${positions.length > 0
+  ? positions.map((p: any) => `- Position: ${p.qty || p.quantity} shares of ${p.symbol}`).join('\n')
+  : '- No open positions'
+}
+- P&L today: ${totalPnlToday >= 0 ? '+' : ''}$${totalPnlToday.toFixed(2)}
+
+${upcomingEvents.length > 0
+  ? `Key Events:\n${upcomingEvents.map((e: { name: string; daysUntil: number }) =>
+      `- ${e.name} in ${e.daysUntil} days`
+    ).join('\n')}`
+  : 'No high-impact events this week'
+}
+
+Strategy: ${strategy}
+
+Have a great trading day!`
+        }
+
+        return NextResponse.json({
+          success: true,
+          data: {
+            date,
+            language,
+            yields: {
+              y10,
+              y10Change,
+              y30,
+              y30Change,
+              curveStatus,
+            },
+            portfolio: {
+              totalValue,
+              positions: positions.map((p: any) => ({
+                symbol: p.symbol,
+                qty: p.qty || p.quantity,
+                pnlToday: p.unrealized_pl || p.unrealizedPnL || 0,
+              })),
+              totalPnlToday,
+            },
+            events: upcomingEvents,
+            strategy,
+            briefText,
+          },
+        })
+      } catch (error) {
+        console.error('Failed to generate morning brief:', error)
+        return NextResponse.json(
+          { success: false, error: 'Failed to generate morning brief' },
+          { status: 500 }
+        )
+      }
+    }
+
     default:
       return NextResponse.json({ success: false, error: 'Unknown action' }, { status: 400 })
   }
