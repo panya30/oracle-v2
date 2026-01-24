@@ -17,6 +17,8 @@ import {
   ChevronDown,
   Loader2,
   RefreshCw,
+  Sparkles,
+  Lightbulb,
 } from 'lucide-react'
 import { useSpeech, type SpeechLanguage, type SpeechRate } from '@/hooks/useSpeech'
 
@@ -45,6 +47,8 @@ interface MorningBriefData {
   }>
   strategy: 'HOLD' | 'BUY' | 'SELL' | 'WAIT'
   briefText: string
+  insights?: string[]
+  aiGenerated?: boolean
 }
 
 const SPEED_OPTIONS: { value: SpeechRate; label: string }[] = [
@@ -166,6 +170,12 @@ export function MorningBriefCard() {
           <span className="font-semibold">
             {language === 'th-TH' ? 'สรุปตลาดเช้านี้' : 'Morning Brief'}
           </span>
+          {briefData?.aiGenerated && (
+            <span className="flex items-center gap-1 px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded-full">
+              <Sparkles className="w-3 h-3" />
+              AI
+            </span>
+          )}
         </div>
 
         {/* Language Toggle */}
@@ -335,6 +345,24 @@ export function MorningBriefCard() {
                       : briefData.strategy}
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* AI Insights */}
+            {briefData.insights && briefData.insights.length > 0 && (
+              <div className="mt-4 bg-purple-500/10 rounded-lg p-3">
+                <div className="flex items-center gap-2 text-purple-400 text-sm font-medium mb-2">
+                  <Lightbulb className="w-4 h-4" />
+                  {language === 'th-TH' ? 'ข้อสังเกตจาก AI' : 'AI Insights'}
+                </div>
+                <ul className="space-y-1">
+                  {briefData.insights.map((insight, idx) => (
+                    <li key={idx} className="text-sm text-text-secondary flex items-start gap-2">
+                      <span className="text-purple-400 mt-1">•</span>
+                      <span>{insight}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
 

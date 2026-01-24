@@ -603,3 +603,185 @@ export async function generateAgentReply(
 
   return messages
 }
+
+// ==================== MORNING BRIEF AI ====================
+
+export interface MorningBriefData {
+  yields: {
+    y10: number
+    y10Change: number
+    y30: number
+    y30Change: number
+    y2?: number
+    y5?: number
+    spread2Y10Y?: number
+    spread10Y30Y?: number
+  }
+  prices: Array<{ ticker: string; price: number; change?: number }>
+  portfolio: {
+    totalValue: number
+    cash?: number
+    positions: Array<{ symbol: string; qty: number; marketValue?: number; pnlToday: number }>
+    totalPnlToday: number
+  }
+  events: Array<{ name: string; daysUntil: number; type?: string }>
+  recentTrades?: Array<{ ticker: string; action: string; pnl?: number }>
+  stats?: {
+    totalTrades: number
+    winRate: number
+  }
+}
+
+export type BriefLanguage = 'th-TH' | 'en-US'
+
+/**
+ * Generate AI-powered morning brief with natural language
+ * Varies tone and insights each time, not just templates
+ */
+export async function generateMorningBrief(
+  data: MorningBriefData,
+  language: BriefLanguage = 'en-US'
+): Promise<{ briefText: string; strategy: 'HOLD' | 'BUY' | 'SELL' | 'WAIT'; insights: string[] }> {
+  const memory = loadAgentMemory()
+  const now = new Date()
+  const timeOfDay = now.getHours() < 12 ? 'morning' : now.getHours() < 17 ? 'afternoon' : 'evening'
+
+  // Build context for AI
+  const marketContext = `
+## MARKET DATA (${now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })})
+
+Treasury Yields:
+- 2-Year: ${data.yields.y2?.toFixed(2) || 'N/A'}%
+- 5-Year: ${data.yields.y5?.toFixed(2) || 'N/A'}%
+- 10-Year: ${data.yields.y10.toFixed(2)}% (${data.yields.y10Change >= 0 ? '+' : ''}${(data.yields.y10Change * 100).toFixed(0)} bps)
+- 30-Year: ${data.yields.y30.toFixed(2)}% (${data.yields.y30Change >= 0 ? '+' : ''}${(data.yields.y30Change * 100).toFixed(0)} bps)
+- 2Y-10Y Spread: ${data.yields.spread2Y10Y?.toFixed(2) || 'N/A'}%
+- 10Y-30Y Spread: ${data.yields.spread10Y30Y?.toFixed(2) || 'N/A'}%
+
+ETF Prices:
+${data.prices.map(p => `- ${p.ticker}: $${p.price.toFixed(2)}${p.change ? ` (${p.change >= 0 ? '+' : ''}${p.change.toFixed(2)}%)` : ''}`).join('\n')}
+
+## PORTFOLIO STATUS
+- Total Value: $${data.portfolio.totalValue.toLocaleString()}
+- Cash: $${data.portfolio.cash?.toLocaleString() || 'N/A'}
+- Today's P&L: ${data.portfolio.totalPnlToday >= 0 ? '+' : ''}$${data.portfolio.totalPnlToday.toFixed(2)}
+${data.portfolio.positions.length > 0
+  ? `Positions:\n${data.portfolio.positions.map(p => `  - ${p.symbol}: ${p.qty} shares, P&L: $${p.pnlToday.toFixed(2)}`).join('\n')}`
+  : '- No open positions (100% cash)'}
+
+## UPCOMING EVENTS
+${data.events.length > 0
+  ? data.events.map(e => `- ${e.name} in ${e.daysUntil} day(s)`).join('\n')
+  : '- No high-impact events this week'}
+
+## TRADING HISTORY
+${data.stats ? `- Total Trades: ${data.stats.totalTrades}, Win Rate: ${data.stats.winRate.toFixed(0)}%` : '- No trade history'}
+${data.recentTrades && data.recentTrades.length > 0
+  ? `Recent:\n${data.recentTrades.slice(0, 3).map(t => `  - ${t.action} ${t.ticker}${t.pnl ? `: $${t.pnl.toFixed(2)}` : ''}`).join('\n')}`
+  : ''}
+
+## LEARNINGS FROM ORACLE
+${memory.learnings.slice(0, 3).map(l => `- ${l.content.slice(0, 100)}`).join('\n') || '- No recent learnings'}
+`
+
+  const systemPrompt = language === 'th-TH'
+    ? `คุณคือ Robin ผู้ช่วยการลงทุนส่วนตัว คุณกำลังให้สรุปตลาดตอน${timeOfDay === 'morning' ? 'เช้า' : timeOfDay === 'afternoon' ? 'บ่าย' : 'เย็น'}
+
+บุคลิกของคุณ:
+- อบอุ่น เป็นกันเอง แต่มีความเป็นมืออาชีพ
+- ใช้ภาษาไทยที่เข้าใจง่าย ผสม technical terms เมื่อจำเป็น
+- ให้ข้อมูลที่เป็นประโยชน์และ actionable
+- มีอารมณ์ขันเล็กน้อย ไม่แข็งทื่อ
+
+หน้าที่:
+1. สรุปสถานการณ์ตลาดพันธบัตร (yields, curve)
+2. อัพเดทพอร์ตโฟลิโอ (มูลค่า, กำไรขาดทุน)
+3. เตือนเรื่อง events สำคัญ
+4. แนะนำกลยุทธ์ (ซื้อ/ถือ/ขาย/รอ) พร้อมเหตุผล
+5. ให้ insight หรือ observation ที่น่าสนใจ
+
+รูปแบบ:
+- พูดเหมือนคุยกับเพื่อน ไม่ใช่อ่านรายงาน
+- ความยาวพอดี ไม่ยาวเกินไป (150-250 คำ)
+- จบด้วยกำลังใจหรือคำแนะนำ`
+
+    : `You are Robin, a personal investment assistant. You're giving a ${timeOfDay} market brief.
+
+Your personality:
+- Warm, friendly, but professional
+- Clear and concise, no jargon overload
+- Actionable insights, not just data dumps
+- Slightly playful, not robotic
+
+Your job:
+1. Summarize bond market situation (yields, curve dynamics)
+2. Update on portfolio (value, P&L)
+3. Alert about upcoming key events
+4. Recommend strategy (BUY/HOLD/SELL/WAIT) with reasoning
+5. Share an interesting insight or observation
+
+Format:
+- Speak like talking to a friend, not reading a report
+- Keep it digestible (150-250 words)
+- End with encouragement or actionable advice`
+
+  const userPrompt = language === 'th-TH'
+    ? `จากข้อมูลด้านล่าง ช่วยสร้างสรุปตลาดตอน${timeOfDay === 'morning' ? 'เช้า' : timeOfDay === 'afternoon' ? 'บ่าย' : 'เย็น'}ให้หน่อย
+
+${marketContext}
+
+สิ่งที่ต้องการ:
+1. briefText: สรุปตลาดแบบเป็นธรรมชาติ พูดเหมือนคุยกับเพื่อน
+2. strategy: HOLD, BUY, SELL, หรือ WAIT (เลือกอันเดียว)
+3. insights: 2-3 ข้อสังเกตหรือ insight ที่น่าสนใจ
+
+ตอบเป็น JSON format:
+{"briefText": "...", "strategy": "HOLD|BUY|SELL|WAIT", "insights": ["...", "..."]}`
+
+    : `Based on the data below, create a ${timeOfDay} market brief.
+
+${marketContext}
+
+Required output:
+1. briefText: Natural, conversational market summary
+2. strategy: HOLD, BUY, SELL, or WAIT (pick one)
+3. insights: 2-3 interesting observations or insights
+
+Respond in JSON format:
+{"briefText": "...", "strategy": "HOLD|BUY|SELL|WAIT", "insights": ["...", "..."]}`
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+      max_tokens: 800,
+      temperature: 0.7, // Higher for more varied responses
+      response_format: { type: 'json_object' },
+    })
+
+    const content = response.choices[0]?.message?.content || '{}'
+    const parsed = JSON.parse(content)
+
+    return {
+      briefText: parsed.briefText || (language === 'th-TH' ? 'ไม่สามารถสร้างสรุปได้' : 'Unable to generate brief'),
+      strategy: ['HOLD', 'BUY', 'SELL', 'WAIT'].includes(parsed.strategy) ? parsed.strategy : 'HOLD',
+      insights: Array.isArray(parsed.insights) ? parsed.insights : [],
+    }
+  } catch (error) {
+    console.error('Error generating morning brief:', error)
+
+    // Fallback to simple template
+    const fallbackText = language === 'th-TH'
+      ? `สวัสดีค่ะ! 10Y yield อยู่ที่ ${data.yields.y10.toFixed(2)}% พอร์ตมูลค่า $${data.portfolio.totalValue.toLocaleString()} วันนี้${data.portfolio.totalPnlToday >= 0 ? 'เขียว' : 'แดง'} $${Math.abs(data.portfolio.totalPnlToday).toFixed(2)}`
+      : `Good ${timeOfDay}! 10Y yield at ${data.yields.y10.toFixed(2)}%. Portfolio value $${data.portfolio.totalValue.toLocaleString()}, today ${data.portfolio.totalPnlToday >= 0 ? 'up' : 'down'} $${Math.abs(data.portfolio.totalPnlToday).toFixed(2)}.`
+
+    return {
+      briefText: fallbackText,
+      strategy: 'HOLD',
+      insights: [],
+    }
+  }
+}

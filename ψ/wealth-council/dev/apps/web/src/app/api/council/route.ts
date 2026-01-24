@@ -22,7 +22,10 @@ import {
 import {
   generateCouncilDiscussion,
   generateAgentReply,
+  generateMorningBrief,
   type CouncilContext,
+  type MorningBriefData,
+  type BriefLanguage,
 } from '@/lib/council-ai'
 
 // Agent definitions
@@ -436,11 +439,11 @@ export async function POST(request: NextRequest) {
     }
 
     case 'morning-brief': {
-      const { language = 'en-US' } = params
+      const { language = 'en-US' } = params as { language?: BriefLanguage }
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3200'
 
       try {
-        // Fetch market data, portfolio, and events in parallel
+        // Fetch market data, portfolio, events, and trade stats in parallel
         const [yieldsRes, pricesRes, portfolioRes, eventsRes] = await Promise.all([
           fetch(`${baseUrl}/api/hermes?action=yields`).catch(() => null),
           fetch(`${baseUrl}/api/hermes?action=prices&tickers=TMV,TBT,TLT,TBF`).catch(() => null),
@@ -458,6 +461,8 @@ export async function POST(request: NextRequest) {
 
         // Extract yield data
         const yields = yieldsData?.data?.yields || []
+        const y2Yield = yields.find((y: any) => y.tenor === '2Y')
+        const y5Yield = yields.find((y: any) => y.tenor === '5Y')
         const y10Yield = yields.find((y: any) => y.tenor === '10Y')
         const y30Yield = yields.find((y: any) => y.tenor === '30Y')
 
@@ -467,13 +472,22 @@ export async function POST(request: NextRequest) {
         const y30Change = y30Yield?.change || -0.03
 
         // Determine yield curve status
-        const spread = (yieldsData?.data?.spread10Y30Y || 0)
-        const curveStatus = spread > 0.6 ? 'steepening' : spread < 0.4 ? 'flattening' : 'stable'
+        const spread10Y30Y = yieldsData?.data?.spread10Y30Y || 0
+        const spread2Y10Y = yieldsData?.data?.spread2Y10Y || 0
+        const curveStatus = spread10Y30Y > 0.6 ? 'steepening' : spread10Y30Y < 0.4 ? 'flattening' : 'stable'
+
+        // Extract prices
+        const prices = (pricesData?.data || []).map((p: any) => ({
+          ticker: p.ticker,
+          price: p.price || 0,
+          change: p.changePercent || 0,
+        }))
 
         // Extract portfolio data
         const portfolio = portfolioData?.data || {}
         const positions = portfolio.positions || []
         const totalValue = portfolio.totalValue || portfolio.portfolio_value || 100000
+        const cash = portfolio.cash || 0
         const totalPnlToday = positions.reduce(
           (sum: number, p: any) => sum + (p.unrealized_pl || p.unrealizedPnL || 0),
           0
@@ -483,7 +497,7 @@ export async function POST(request: NextRequest) {
         const eventsArray = eventsData?.data || []
         const upcomingEvents = (Array.isArray(eventsArray) ? eventsArray : [])
           .filter((e: any) => e.impact === 'high')
-          .slice(0, 3)
+          .slice(0, 5)
           .map((e: any) => {
             const eventDate = new Date(e.date)
             const now = new Date()
@@ -492,84 +506,58 @@ export async function POST(request: NextRequest) {
             return {
               name: e.title || e.name,
               daysUntil: diffDays,
+              type: e.type,
             }
           })
 
-        // Determine strategy
-        let strategy: 'HOLD' | 'BUY' | 'SELL' | 'WAIT' = 'HOLD'
-        if (y10 >= 4.5 && totalPnlToday >= 0) {
-          strategy = 'HOLD'
-        } else if (y10 >= 4.8) {
-          strategy = 'BUY'
-        } else if (y10 < 4.0 && totalPnlToday > 100) {
-          strategy = 'SELL'
-        } else {
-          strategy = 'WAIT'
+        // Get trade stats from memory
+        const { getTradeStats, getRecentTrades } = await import('@/lib/agent-intelligence')
+        const stats = getTradeStats()
+        const recentTrades = getRecentTrades(5).map(t => ({
+          ticker: t.ticker,
+          action: t.action,
+          pnl: t.outcome?.pnl,
+        }))
+
+        // Build data for AI generator
+        const briefData: MorningBriefData = {
+          yields: {
+            y10,
+            y10Change,
+            y30,
+            y30Change,
+            y2: y2Yield?.yield,
+            y5: y5Yield?.yield,
+            spread2Y10Y,
+            spread10Y30Y,
+          },
+          prices,
+          portfolio: {
+            totalValue,
+            cash,
+            positions: positions.map((p: any) => ({
+              symbol: p.symbol,
+              qty: p.qty || p.quantity || 0,
+              marketValue: p.market_value || p.marketValue || 0,
+              pnlToday: p.unrealized_pl || p.unrealizedPnL || 0,
+            })),
+            totalPnlToday,
+          },
+          events: upcomingEvents,
+          recentTrades,
+          stats: {
+            totalTrades: stats.totalTrades,
+            winRate: stats.winRate,
+          },
         }
 
-        // Generate brief text
+        // Generate AI-powered brief
+        const aiBrief = await generateMorningBrief(briefData, language)
+
         const date = new Date().toLocaleDateString(
           language === 'th-TH' ? 'th-TH' : 'en-US',
           { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
         )
-
-        let briefText: string
-
-        if (language === 'th-TH') {
-          // Thai brief
-          briefText = `สวัสดีตอนเช้า! สรุปตลาดวันที่ ${date}
-
-อัตราผลตอบแทนพันธบัตร:
-- พันธบัตร 10 ปี: ${y10.toFixed(2)}% ${y10Change >= 0 ? 'เพิ่มขึ้น' : 'ลดลง'} ${Math.abs(y10Change * 100).toFixed(0)} basis points
-- พันธบัตร 30 ปี: ${y30.toFixed(2)}% ${y30Change >= 0 ? 'เพิ่มขึ้น' : 'ลดลง'} ${Math.abs(y30Change * 100).toFixed(0)} basis points
-- Yield curve กำลัง${curveStatus === 'steepening' ? 'ชันขึ้น' : curveStatus === 'flattening' ? 'แบนลง' : 'คงที่'}
-
-พอร์ตของคุณ:
-- มูลค่ารวม: $${totalValue.toLocaleString()}
-${positions.length > 0
-  ? positions.map((p: any) => `- Position: ${p.qty || p.quantity} หุ้น ${p.symbol}`).join('\n')
-  : '- ยังไม่มี position'
-}
-- กำไรขาดทุนวันนี้: ${totalPnlToday >= 0 ? '+' : ''}$${totalPnlToday.toFixed(2)}
-
-${upcomingEvents.length > 0
-  ? `กิจกรรมสำคัญ:\n${upcomingEvents.map((e: { name: string; daysUntil: number }) =>
-      `- ${e.name} ในอีก ${e.daysUntil} วัน`
-    ).join('\n')}`
-  : 'ไม่มีกิจกรรมสำคัญในสัปดาห์นี้'
-}
-
-กลยุทธ์: ${strategy === 'HOLD' ? 'ถือ' : strategy === 'BUY' ? 'ซื้อ' : strategy === 'SELL' ? 'ขาย' : 'รอ'}
-
-ขอให้เป็นวันที่ดีนะคะ!`
-        } else {
-          // English brief
-          briefText = `Good morning! Here's your market brief for ${date}.
-
-Treasury Yields:
-- 10-Year: ${y10.toFixed(2)}%, ${y10Change >= 0 ? 'up' : 'down'} ${Math.abs(y10Change * 100).toFixed(0)} basis points
-- 30-Year: ${y30.toFixed(2)}%, ${y30Change >= 0 ? 'up' : 'down'} ${Math.abs(y30Change * 100).toFixed(0)} basis points
-- Yield curve is ${curveStatus}
-
-Your Portfolio:
-- Total value: $${totalValue.toLocaleString()}
-${positions.length > 0
-  ? positions.map((p: any) => `- Position: ${p.qty || p.quantity} shares of ${p.symbol}`).join('\n')
-  : '- No open positions'
-}
-- P&L today: ${totalPnlToday >= 0 ? '+' : ''}$${totalPnlToday.toFixed(2)}
-
-${upcomingEvents.length > 0
-  ? `Key Events:\n${upcomingEvents.map((e: { name: string; daysUntil: number }) =>
-      `- ${e.name} in ${e.daysUntil} days`
-    ).join('\n')}`
-  : 'No high-impact events this week'
-}
-
-Strategy: ${strategy}
-
-Have a great trading day!`
-        }
 
         return NextResponse.json({
           success: true,
@@ -593,8 +581,10 @@ Have a great trading day!`
               totalPnlToday,
             },
             events: upcomingEvents,
-            strategy,
-            briefText,
+            strategy: aiBrief.strategy,
+            briefText: aiBrief.briefText,
+            insights: aiBrief.insights,
+            aiGenerated: true,
           },
         })
       } catch (error) {
