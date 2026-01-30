@@ -1,0 +1,27 @@
+{
+  "totalValue": 99968.81999999999,
+  "cash": 84234.31,
+  "cashPercent": 84.2605824496078,
+  "positions": [
+    {
+      "id": "alpaca-2d7403f0-38ef-4f79-98f8-341c5ecc4b6f",
+      "ticker": "TBT",
+      "name": "ProShares UltraShort 20+ Year Treasury",
+      "shares": 457,
+      "avgCost": 34.498184,
+      "currentPrice": 34.43,
+      "marketValue": 15734.51,
+      "unrealizedPnL": -31.160088000000542,
+      "unrealizedPnLPercent": -0.1976451861929926,
+      "weight": 15.739417550392213
+    }
+  ],
+  "dailyPnL": 0,
+  "dailyPnLPercent": 0,
+  "weeklyPnL": -31.18,
+  "weeklyPnLPercent": -0.03,
+  "monthlyPnL": -31.18,
+  "monthlyPnLPercent": -0.03,
+  "updatedAt": "2026-01-25T11:58:51.118Z",
+  "source": "alpaca"
+}

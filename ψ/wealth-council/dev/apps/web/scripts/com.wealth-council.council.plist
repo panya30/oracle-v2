@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.wealth-council.council</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/curl</string>
+        <string>-s</string>
+        <string>http://localhost:3200/api/cron/council</string>
+    </array>
+
+    <!-- Run every 30 minutes (1800 seconds) -->
+    <key>StartInterval</key>
+    <integer>1800</integer>
+
+    <!-- Log output -->
+    <key>StandardOutPath</key>
+    <string>/tmp/wealth-council-council.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/wealth-council-council-error.log</string>
+</dict>
+</plist>

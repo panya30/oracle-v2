@@ -1,0 +1,1002 @@
+[
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769566500297",
+    "acknowledged": false,
+    "timestamp": "2026-01-28T02:15:00.297Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769566199411",
+    "acknowledged": false,
+    "timestamp": "2026-01-28T02:09:59.411Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "fetch failed",
+    "agent": "DELPHI",
+    "id": "alert-1769565898162",
+    "acknowledged": false,
+    "timestamp": "2026-01-28T02:04:58.162Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769565598057",
+    "acknowledged": false,
+    "timestamp": "2026-01-28T01:59:58.057Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769565296876",
+    "acknowledged": false,
+    "timestamp": "2026-01-28T01:54:56.876Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769564995466",
+    "acknowledged": false,
+    "timestamp": "2026-01-28T01:49:55.466Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769564572357",
+    "acknowledged": false,
+    "timestamp": "2026-01-28T01:42:52.357Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769564271038",
+    "acknowledged": false,
+    "timestamp": "2026-01-28T01:37:51.038Z"
+  },
+  {
+    "level": "danger",
+    "category": "risk",
+    "title": "Trade Blocked: TBT",
+    "message": "Risk check failed: Order value $10002.1 exceeds limit $10000",
+    "agent": "TYCHE",
+    "id": "alert-1769563968925",
+    "acknowledged": false,
+    "timestamp": "2026-01-28T01:32:48.925Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "fetch failed",
+    "agent": "DELPHI",
+    "id": "alert-1769563668679",
+    "acknowledged": false,
+    "timestamp": "2026-01-28T01:27:48.679Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769540220569",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T18:57:00.569Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769529088066",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T15:51:28.066Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769528787018",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T15:46:27.018Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769528485961",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T15:41:25.961Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769528184931",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T15:36:24.931Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769527883938",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T15:31:23.938Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769527582707",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T15:26:22.707Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769527281731",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T15:21:21.731Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769526980632",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T15:16:20.632Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769526679274",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T15:11:19.274Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769526377975",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T15:06:17.975Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769526077104",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T15:01:17.104Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769525774877",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T14:56:14.877Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769525473888",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T14:51:13.888Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769525172633",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T14:46:12.633Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769524871651",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T14:41:11.651Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769524570236",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T14:36:10.236Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769524269248",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T14:31:09.248Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769523967569",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T14:26:07.569Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769523665466",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T14:21:05.466Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769523095310",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T14:11:35.310Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769522794275",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T14:06:34.275Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769522493398",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T14:01:33.398Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769522192340",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T13:56:32.340Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769521891341",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T13:51:31.341Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769521590480",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T13:46:30.480Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769521289467",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T13:41:29.467Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769520988541",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T13:36:28.541Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769520687446",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T13:31:27.446Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769520384618",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T13:26:24.618Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769520081950",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T13:21:21.950Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769519781055",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T13:16:21.055Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769519479982",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T13:11:19.982Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769519179014",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T13:06:19.014Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769518875193",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T13:01:15.193Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769518573312",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T12:56:13.312Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769515806557",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T12:10:06.557Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769515505221",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T12:05:05.221Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769515204347",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T12:00:04.347Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769514903029",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T11:55:03.029Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769514602164",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T11:50:02.164Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769514300815",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T11:45:00.815Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769513999958",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T11:39:59.958Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769513698201",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T11:34:58.201Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769513397343",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T11:29:57.343Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "fetch failed",
+    "agent": "DELPHI",
+    "id": "alert-1769511304366",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T10:55:04.366Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769508400667",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T10:06:40.667Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769508099527",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T10:01:39.527Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769507798218",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T09:56:38.218Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769507497126",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T09:51:37.126Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769507195996",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T09:46:35.996Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769506895028",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T09:41:35.028Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769506593684",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T09:36:33.684Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769506292527",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T09:31:32.527Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769505991406",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T09:26:31.406Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769505689829",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T09:21:29.829Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769505388619",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T09:16:28.619Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769505087691",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T09:11:27.691Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769504786756",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T09:06:26.756Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769504485758",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T09:01:25.758Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769504184797",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T08:56:24.797Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769503883897",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T08:51:23.897Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "fetch failed",
+    "agent": "DELPHI",
+    "id": "alert-1769503582429",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T08:46:22.429Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769497799453",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T07:09:59.453Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769497498236",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T07:04:58.236Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769497197219",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T06:59:57.219Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769496872103",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T06:54:32.103Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769496569599",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T06:49:29.599Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769496268482",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T06:44:28.482Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769495967141",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T06:39:27.141Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769495666209",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T06:34:26.209Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769495364825",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T06:29:24.825Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769495063327",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T06:24:23.327Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769494762425",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T06:19:22.425Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "fetch failed",
+    "agent": "DELPHI",
+    "id": "alert-1769494461370",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T06:14:21.370Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769489372988",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T04:49:32.988Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769489071564",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T04:44:31.564Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769488770713",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T04:39:30.713Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769488468149",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T04:34:28.149Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769488167255",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T04:29:27.255Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769487865801",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T04:24:25.801Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769487564937",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T04:19:24.937Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769487263687",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T04:14:23.687Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769486961312",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T04:09:21.312Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769486660308",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T04:04:20.308Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769486359436",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T03:59:19.436Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769486058054",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T03:54:18.054Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769485757136",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T03:49:17.136Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769482063689",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T02:47:43.689Z"
+  },
+  {
+    "level": "danger",
+    "category": "error",
+    "title": "Execution Failed: TBT",
+    "message": "potential wash trade detected. use complex orders",
+    "agent": "DELPHI",
+    "id": "alert-1769481762748",
+    "acknowledged": false,
+    "timestamp": "2026-01-27T02:42:42.748Z"
+  }
+]

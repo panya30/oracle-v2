@@ -1,0 +1,36 @@
+{
+  "level": "full-auto",
+  "enabled": true,
+  "riskLimits": {
+    "maxPositionSize": 25,
+    "maxDailyTrades": 10,
+    "maxDailyLoss": 5,
+    "maxDrawdown": 15,
+    "maxOrderValue": 10000,
+    "minCashReserve": 20,
+    "tradingHoursOnly": true,
+    "noTradingBeforeFOMC": 24
+  },
+  "signalFilters": {
+    "minConfidence": 70,
+    "allowedAgents": [
+      "DELPHI",
+      "ATHENA"
+    ],
+    "allowedTickers": [
+      "TMV",
+      "TBT",
+      "TBF",
+      "TLT"
+    ],
+    "requireMultipleAgents": false
+  },
+  "notifications": {
+    "onProposal": true,
+    "onExecution": true,
+    "onRiskLimit": true,
+    "onError": true
+  },
+  "lastModified": "2026-01-23T13:11:57.844Z",
+  "modifiedBy": "user"
+}

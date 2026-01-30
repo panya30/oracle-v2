@@ -1,0 +1,20 @@
+{
+  "name": "panya-wealth-council",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "web": "cd apps/web && bun dev",
+    "argus": "cd packages/mcp-argus && bun start",
+    "hermes": "cd packages/mcp-hermes && bun start"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.3.0"
+  }
+}
