@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Chroma storage
+chroma/
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+tmp/
+.tmp/
+
+# Test coverage
+coverage/
+
+# Test artifacts
+playwright-report/
+test-results/
+*.pid
+
+# Next.js
+.next/
+out/
+
+# OS
+.DS_Store
+
+# Embedded clones (have their own .git)
+demo/klakmath-threejs/ψ/learn/repo/
